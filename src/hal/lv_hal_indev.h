@@ -132,10 +132,10 @@ typedef struct _lv_indev_drv_t {
 typedef struct _lv_indev_proc_t {
     lv_indev_state_t state; /**< Current state of the input device.*/
     /*Flags*/
-    uint8_t long_pr_sent : 1;
-    uint8_t reset_query : 1;
-    uint8_t disabled : 1;
-    uint8_t wait_until_release : 1;
+    uint8_t long_pr_sent;
+    uint8_t reset_query;
+    uint8_t disabled;
+    uint8_t wait_until_release;
 
     union {
         struct {
@@ -156,9 +156,9 @@ typedef struct _lv_indev_proc_t {
 
             lv_point_t gesture_sum; /*Count the gesture pixels to check LV_INDEV_DEF_GESTURE_LIMIT*/
             /*Flags*/
-            lv_dir_t scroll_dir : 4;
-            lv_dir_t gesture_dir : 4;
-            uint8_t gesture_sent : 1;
+            lv_dir_t scroll_dir;
+            lv_dir_t gesture_dir;
+            uint8_t gesture_sent;
         } pointer;
         struct {
             /*Keypad data*/

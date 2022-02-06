@@ -58,8 +58,8 @@ typedef struct _lv_disp_draw_buf_t {
     volatile int flushing;
     /*1: It was the last chunk to flush. (It can't be a bit field because when it's cleared from IRQ Read-Modify-Write issue might occur)*/
     volatile int flushing_last;
-    volatile uint32_t last_area         : 1; /*1: the last area is being rendered*/
-    volatile uint32_t last_part         : 1; /*1: the last part of the current area is being rendered*/
+    volatile uint32_t last_area; /*1: the last area is being rendered*/
+    volatile uint32_t last_part; /*1: the last part of the current area is being rendered*/
 } lv_disp_draw_buf_t;
 
 typedef enum {
@@ -91,16 +91,15 @@ typedef struct _lv_disp_drv_t {
      * LVGL will use this buffer(s) to draw the screens contents*/
     lv_disp_draw_buf_t * draw_buf;
 
-    uint32_t direct_mode : 1;        /**< 1: Use screen-sized buffers and draw to absolute coordinates*/
-    uint32_t full_refresh : 1;       /**< 1: Always make the whole screen redrawn*/
-    uint32_t sw_rotate : 1;          /**< 1: use software rotation (slower)*/
-    uint32_t antialiasing : 1;       /**< 1: anti-aliasing is enabled on this display.*/
-    uint32_t rotated : 2;            /**< 1: turn the display by 90 degree. @warning Does not update coordinates for you!*/
-    uint32_t screen_transp : 1;      /**Handle if the screen doesn't have a solid (opa == LV_OPA_COVER) background.
+    uint32_t direct_mode;        /**< 1: Use screen-sized buffers and draw to absolute coordinates*/
+    uint32_t full_refresh;       /**< 1: Always make the whole screen redrawn*/
+    uint32_t sw_rotate;          /**< 1: use software rotation (slower)*/
+    uint32_t antialiasing;       /**< 1: anti-aliasing is enabled on this display.*/
+    uint32_t rotated;            /**< 1: turn the display by 90 degree. @warning Does not update coordinates for you!*/
+    uint32_t screen_transp;      /**Handle if the screen doesn't have a solid (opa == LV_OPA_COVER) background.
                                        * Use only if required because it's slower.*/
 
-    uint32_t dpi : 10;              /** DPI (dot per inch) of the display. Default value is `LV_DPI_DEF`.*/
-
+    uint32_t dpi;              /** DPI (dot per inch) of the display. Default value is `LV_DPI_DEF`.*/
     /** MANDATORY: Write the internal buffer (draw_buf) to the display. 'lv_disp_flush_ready()' has to be
      * called when finished*/
     void (*flush_cb)(struct _lv_disp_drv_t * disp_drv, const lv_area_t * area, lv_color_t * color_p);
@@ -112,8 +111,13 @@ typedef struct _lv_disp_drv_t {
     /** OPTIONAL: Set a pixel in a buffer according to the special requirements of the display
      * Can be used for color format not supported in LittelvGL. E.g. 2 bit -> 4 gray scales
      * @note Much slower then drawing with supported color formats.*/
+#ifdef ZIG
+    void (*set_px_cb)(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
+                      uint32_t color, lv_opa_t opa);
+#else
     void (*set_px_cb)(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, lv_coord_t buf_w, lv_coord_t x, lv_coord_t y,
                       lv_color_t color, lv_opa_t opa);
+#endif
 
     void (*clear_cb)(struct _lv_disp_drv_t * disp_drv, uint8_t * buf, uint32_t size);
 
@@ -135,6 +139,14 @@ typedef struct _lv_disp_drv_t {
 
     /** OPTIONAL: called when start rendering */
     void (*render_start_cb)(struct _lv_disp_drv_t * disp_drv);
+#ifdef ZIG
+    void (*gpu_fill_cb)(struct _lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
+                        const lv_area_t * fill_area, uint32_t color);
+#else
+    /** OPTIONAL: Fill a memory with a color (GPU only)*/
+    void (*gpu_fill_cb)(struct _lv_disp_drv_t * disp_drv, lv_color_t * dest_buf, lv_coord_t dest_width,
+                        const lv_area_t * fill_area, lv_color_t color);
+#endif
 
     /** On CHROMA_KEYED images this color will be transparent.
      * `LV_COLOR_CHROMA_KEY` by default. (lv_conf.h)*/
