@@ -85,12 +85,12 @@ typedef struct _lv_anim_t {
     uint32_t playback_time;      /**< Duration of playback animation*/
     uint32_t repeat_delay;       /**< Wait before repeat*/
     uint16_t repeat_cnt;         /**< Repeat count for the animation*/
-    uint8_t early_apply  : 1;    /**< 1: Apply start value immediately even is there is `delay`*/
+    uint8_t early_apply;    /**< 1: Apply start value immediately even is there is `delay`*/
 
     /*Animation system use these - user shouldn't set*/
-    uint8_t playback_now : 1; /**< Play back is in progress*/
-    uint8_t run_round : 1;    /**< Indicates the animation has run in this round*/
-    uint8_t start_cb_called : 1;    /**< Indicates that the `start_cb` was already called*/
+    uint8_t playback_now; /**< Play back is in progress*/
+    uint8_t run_round;    /**< Indicates the animation has run in this round*/
+    uint8_t start_cb_called;    /**< Indicates that the `start_cb` was already called*/
 } lv_anim_t;
 
 /**********************
