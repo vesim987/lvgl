@@ -128,9 +128,9 @@ struct _lv_event_t {
     void * user_data;
     void * param;
     lv_event_t * prev;
-    uint8_t deleted : 1;
-    uint8_t stop_processing : 1;
-    uint8_t stop_bubbling : 1;
+    uint8_t deleted;
+    uint8_t stop_processing;
+    uint8_t stop_bubbling;
 };
 
 /**
